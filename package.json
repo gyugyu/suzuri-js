@@ -3,12 +3,24 @@
   "version": "0.0.1",
   "description": "JavaScript wrapper for SUZURI API",
   "main": "lib/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gyugyu/suzuri-js.git"
+  },
+  "keywords": [
+    "suzuri",
+    "api"
+  ],
   "scripts": {
     "prepublish": "babel src -d lib",
     "test": "mocha --compilers js:espower-babel/guess test",
     "build": "babel src -d lib"
   },
   "author": "Yusuke Yagyu",
+  "bugs": {
+    "url": "https://github.com/gyugyu/suzuri-js/issues"
+  },
+  "homepage": "https://github.com/gyugyu/suzuri-js",
   "license": "MIT",
   "dependencies": {
     "bluebird": "^2.9.13",
