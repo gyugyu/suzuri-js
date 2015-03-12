@@ -1,0 +1,19 @@
+{
+  "name": "suzuri",
+  "version": "0.0.1",
+  "description": "JavaScript wrapper for SUZURI API",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Yusuke Yagyu",
+  "license": "MIT",
+  "dependencies": {
+    "bluebird": "^2.9.13",
+    "coffee-script": "^1.9.1",
+    "superagent": "^0.21.0"
+  },
+  "devDependencies": {
+    "babel": "^4.7.8"
+  }
+}
