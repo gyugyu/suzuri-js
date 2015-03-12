@@ -1,162 +1,212 @@
 import { default as request } from 'superagent'
 import { default as Promise } from 'bluebird'
 
-class Users {
+class Resource {
 
-    constructor(token) {
-        this.token = token
+    constructor(token, options) {
+        this._token = token
+        this._entrypoint = options.entrypoint || 'https://suzuri.jp/api/v1/'
     }
 
-    getSelf() {
+    _get(ID) {
+        return this._request('get', this._name + '/' + ID)
+    }
+
+    _query(parameters) {
+        return this._request('get', this._name, parameters)
+    }
+
+    _post(parameters) {
+        return this._request('post', this._name, parameters)
+    }
+
+    _put(ID, parameters) {
+        return this._request('put', this._name + '/' + ID, parameters)
+    }
+
+    _delete(ID) {
+        return this._request('del', this._name + '/' + ID)
+    }
+
+    _request(type, path, parameters = null) {
         return new Promise((resolve, reject) => {
-            request
-                .get('https://suzuri.jp/api/v1/user')
+            let url = this._entrypoint + path
+            var req = request[type](url)
                 .set({
-                    Authorization: 'Bearer ' + this.token,
+                    Authorization: 'Bearer ' + this._token,
                     Accept: 'application/json'
-                })
-                .end((err, res) => {
-                    // TODO: error check
+                 })
+            if (parameters) {
+                req = req[type == 'get' ? 'query' : 'send'](parameters)
+            }
+            if (type != 'get') {
+                req = req.set('Content-Type', 'application/json')
+            }
+            req.end((err, res) => {
+                if (err) {
+                    reject(err)
+                } else if (res.error) {
+                    reject(res)
+                } else {
                     resolve(res.body)
-                })
-        })
-    }
-
-    updateSelf(parameters) {
-        return new Promise((resolve, reject) => {
-            request
-                .put('https://suzuri.jp/api/v1/user')
-                .set({
-                    Authorization: 'Bearer ' + this.token,
-                    'Content-Type': 'application/json'
-                })
-                .send(parameters)
-                .end((err, res) => {
-                    // TODO: error check
-                    resolve(res.body)
-                })
-        })
-    }
-
-    getUser(userID) {
-        return new Promise((resolve, reject) => {
-            request
-                .get('https://suzuri.jp/api/v1/users/' + userID)
-                .set({
-                    Authorization: 'Bearer ' + this.token,
-                    Accept: 'application/json'
-                })
-                .end((err, res) => {
-                    // TODO: error check
-                    resolve(res.body)
-                })
+                }
+            })
         })
     }
 }
 
-class Choices {
+class Choices extends Resource {
 
     constructor(token) {
-        this.token = token
+        super(token, {})
+        this._name = 'choices'
     }
 
     getChoice(choiceID) {
-        return new Promise((resolve, reject) => {
-            request
-                .get('https://suzuri.jp/api/v1/choices/' + choiceID)
-                .set({
-                    Authorization: 'Bearer ' + this.token,
-                    Accept: 'application/json'
-                })
-                .send(parameters)
-                .end((err, res) => {
-                    // TODO: error check
-                    resolve(res.body)
-                })
-        })
+        return this._get(choiceID)
+    }
+
+    getChoices(query = {}) {
+        return this._query(query)
     }
 
     createChoice(parameters) {
-        return new Promise((resolve, reject) => {
-            request
-                .get('https://suzuri.jp/api/v1/choices')
-                .set({
-                    Authorization: 'Bearer ' + this.token,
-                    'Content-Type': 'application/json'
-                })
-                .end((err, res) => {
-                    // TODO: error check
-                    resolve(res.body)
-                })
-        })
+        return this._post(parameters)
+    }
+
+    updateChoice(choiceID, parameters) {
+        return this._put(choiceID, parameters)
+    }
+
+    deleteChoice(choiceID) {
+        return this._delete(choiceID)
+    }
+
+    addProduct(choiceID, parameters) {
+        return this._request('post', this._name + '/' + choiceID, parameters)
+    }
+
+    removeProduct(choiceID, parameters = {}) {
+        return this._request('post', this._name + '/' + choiceID + '/remove', parameters)
     }
 }
 
-class Products {
+class Products extends Resource {
 
     constructor(token) {
-        this.token = token
+        super(token, {})
+        this._name = 'products'
     }
 
     getProduct(productID) {
-        return new Promise((resolve, reject) => {
-            request
-                .get('https://suzuri.jp/api/v1/products/' + productID)
-                .set({
-                    Authorization: 'Bearer ' + this.token,
-                    Accept: 'application/json'
-                })
-                .end((err, res) => {
-                    // TODO: error check
-                    resolve(res.body)
-                })
-        })
+        return this._get(productID)
+    }
+
+    getProducts(query) {
+        return this._query(query)
+    }
+
+    createFavorite(productID) {
+        return this._request('post', this._name + '/' + productID + '/favorites')
+    }
+}
+
+class Materials extends Resource {
+
+    constructor(token) {
+        super(token, {})
+        this._name = 'materials'
+    }
+
+    createMaterial(parameters) {
+        return this._post(parameters)
+    }
+
+    updateMaterial(materialID, parameters) {
+        return this._put(materialID, parameters)
+    }
+
+    deleteMaterial(materialID) {
+        return this._delete(materialID)
+    }
+}
+
+class Items extends Resource {
+
+    constructor(token) {
+        super(token, {})
+        this._name = 'items'
+    }
+
+    getItems() {
+        return this._request('get', this._name)
+    }
+}
+
+class Users extends Resource {
+
+    constructor(token) {
+        super(token, {})
+        this._name = 'users'
+    }
+
+    getSelf() {
+        return this._request('get', 'user')
+    }
+
+    updateSelf(parameters) {
+        return this._request('put', 'user', parameters)
+    }
+
+    getUser(userID) {
+        return this._get(userID)
     }
 }
 
 export default class Suzuri {
 
     constructor(token) {
-        this.token = token
-        this.apis = {}
+        this._token = token
+        this._resources = {}
     }
 
     get users() {
-        if (!this.apis.users) {
-            this.apis.users = new Users(this.token)
+        if (!this._resources.users) {
+            this._resources.users = new Users(this._token)
         }
 
-        return this.apis.users
+        return this._resources.users
     }
 
     get choices() {
-        if (!this.apis.choices) {
-            this.apis.choices = new Choices(this.token)
+        if (!this._resources.choices) {
+            this._resources.choices = new Choices(this._token)
         }
 
-        return this.apis.choices
+        return this._resources.choices
     }
 
     get products() {
-        if (!this.apis.products) {
-            this.apis.products = new Products(this.token)
+        if (!this._resources.products) {
+            this._resources.products = new Products(this._token)
         }
 
-        return this.apis.products
+        return this._resources.products
     }
 
-    getItems() {
-        return new Promise((resolve, reject) => {
-            request
-                .get('https://suzuri.jp/api/v1/items')
-                .set({
-                    Authorization: 'Bearer ' + this.token,
-                    Accept: 'application/json'
-                })
-                .end((err, res) => {
-                    // TODO: error check
-                    resolve(res.body)
-                })
-        })
+    get materials() {
+        if (!this._resources.materials) {
+            this._resources.materials = new Materials(this._token)
+        }
+
+        return this._resources.materials
+    }
+
+    get items() {
+        if (!this._resources.items) {
+            this._resources.items = new Items(this._token)
+        }
+
+        return this._resources.items
     }
 }

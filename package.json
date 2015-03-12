@@ -4,16 +4,20 @@
   "description": "JavaScript wrapper for SUZURI API",
   "main": "lib/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "prepublish": "babel src -d lib",
+    "test": "mocha --compilers js:espower-babel/guess test",
+    "build": "babel src -d lib"
   },
   "author": "Yusuke Yagyu",
   "license": "MIT",
   "dependencies": {
     "bluebird": "^2.9.13",
-    "coffee-script": "^1.9.1",
     "superagent": "^0.21.0"
   },
   "devDependencies": {
-    "babel": "^4.7.8"
+    "babel": "^4.7.8",
+    "espower-babel": "^1.4.0",
+    "mocha": "^2.2.1",
+    "power-assert": "^0.10.2"
   }
 }
