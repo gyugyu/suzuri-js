@@ -57,8 +57,8 @@ class Resource {
 
 class Choices extends Resource {
 
-    constructor(token) {
-        super(token, {})
+    constructor(token, options) {
+        super(token, options)
         this._name = 'choices'
     }
 
@@ -93,8 +93,8 @@ class Choices extends Resource {
 
 class Products extends Resource {
 
-    constructor(token) {
-        super(token, {})
+    constructor(token, options) {
+        super(token, options)
         this._name = 'products'
     }
 
@@ -113,8 +113,8 @@ class Products extends Resource {
 
 class Materials extends Resource {
 
-    constructor(token) {
-        super(token, {})
+    constructor(token, options) {
+        super(token, options)
         this._name = 'materials'
     }
 
@@ -133,8 +133,8 @@ class Materials extends Resource {
 
 class Items extends Resource {
 
-    constructor(token) {
-        super(token, {})
+    constructor(token, options) {
+        super(token, options)
         this._name = 'items'
     }
 
@@ -145,8 +145,8 @@ class Items extends Resource {
 
 class Users extends Resource {
 
-    constructor(token) {
-        super(token, {})
+    constructor(token, options) {
+        super(token, options)
         this._name = 'users'
     }
 
@@ -165,14 +165,15 @@ class Users extends Resource {
 
 export default class Suzuri {
 
-    constructor(token) {
+    constructor(token, options = {}) {
         this._token = token
+        this._options = options
         this._resources = {}
     }
 
     get users() {
         if (!this._resources.users) {
-            this._resources.users = new Users(this._token)
+            this._resources.users = new Users(this._token, this._options)
         }
 
         return this._resources.users
@@ -180,7 +181,7 @@ export default class Suzuri {
 
     get choices() {
         if (!this._resources.choices) {
-            this._resources.choices = new Choices(this._token)
+            this._resources.choices = new Choices(this._token, this._options)
         }
 
         return this._resources.choices
@@ -188,7 +189,7 @@ export default class Suzuri {
 
     get products() {
         if (!this._resources.products) {
-            this._resources.products = new Products(this._token)
+            this._resources.products = new Products(this._token, this._options)
         }
 
         return this._resources.products
@@ -196,7 +197,7 @@ export default class Suzuri {
 
     get materials() {
         if (!this._resources.materials) {
-            this._resources.materials = new Materials(this._token)
+            this._resources.materials = new Materials(this._token, this._options)
         }
 
         return this._resources.materials
@@ -204,7 +205,7 @@ export default class Suzuri {
 
     get items() {
         if (!this._resources.items) {
-            this._resources.items = new Items(this._token)
+            this._resources.items = new Items(this._token, this._options)
         }
 
         return this._resources.items
